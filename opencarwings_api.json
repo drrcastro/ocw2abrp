@@ -1,0 +1,4027 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "OpenCARWINGS API",
+        "description": "API to get information about cars. API Token is accessible from your account settings",
+        "version": "v1"
+    },
+    "host": "opencarwings.viaaq.eu",
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/",
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "Personal API Key": {
+            "description": "Authorization header should be like this: \"Token xxxxxx\", where xxxxxx = your API token",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "Bearer": {
+            "description": "JWT Token obtained via /api/token/obtain. Authorization header should look like this: \"Bearer xxxxxx\", where where xxxxxx = JWT access token",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "Bearer": []
+        },
+        {
+            "Personal API Key": []
+        }
+    ],
+    "paths": {
+        "/account/detail/": {
+            "get": {
+                "operationId": "account_detail_list",
+                "description": "Get basic account details",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/AccountDetail"
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                },
+                "tags": [
+                    "account"
+                ]
+            },
+            "parameters": []
+        },
+        "/account/pin/": {
+            "post": {
+                "operationId": "account_pin_create",
+                "description": "Change command PIN, requires OTP code if 2FA is enabled, or old pin if disabled",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PinChange"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "403": {
+                        "description": "Invalid OTP Code"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                },
+                "tags": [
+                    "account"
+                ]
+            },
+            "parameters": []
+        },
+        "/account/reset-api-key/": {
+            "post": {
+                "operationId": "account_reset-api-key_create",
+                "description": "Reset API-key. ONLY accessible from web portal!",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Reset successfully!"
+                    }
+                },
+                "tags": [
+                    "account"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/alerts/{vin}/": {
+            "get": {
+                "operationId": "api_alerts_read",
+                "description": "Retrieve a list of alerts for a vehicle",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AlertHistoryFull"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Car not found"
+                    }
+                },
+                "tags": [
+                    "alerts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/": {
+            "get": {
+                "operationId": "api_car_list",
+                "description": "Retrieve a list of cars",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CarSerializerList"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/car/{vin}/": {
+            "get": {
+                "operationId": "api_car_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Car"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "put": {
+                "operationId": "api_car_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CarUpdating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Car"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "patch": {
+                "operationId": "api_car_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CarUpdating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Car"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "delete": {
+                "operationId": "api_car_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/abs": {
+            "get": {
+                "operationId": "api_car_probe_abs_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMABSHistoryRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/chargeplug": {
+            "get": {
+                "operationId": "api_car_probe_chargeplug_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMChargeRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/charging_history": {
+            "get": {
+                "operationId": "api_car_probe_charging_history_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMChargeHistory"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/dotfiles": {
+            "get": {
+                "operationId": "api_car_probe_dotfiles_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/DOTFiles"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/dtc": {
+            "get": {
+                "operationId": "api_car_probe_dtc_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMTroubleRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/excessive_aircon": {
+            "get": {
+                "operationId": "api_car_probe_excessive_aircon_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMExcessiveAirconRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/excessive_idling": {
+            "get": {
+                "operationId": "api_car_probe_excessive_idling_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMExcessiveIdlingRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/latest": {
+            "get": {
+                "operationId": "api_car_probe_latest_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CRMLatest"
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/lifetime": {
+            "get": {
+                "operationId": "api_car_probe_lifetime_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CRMLifetime"
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/monthly": {
+            "get": {
+                "operationId": "api_car_probe_monthly_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMMonthly"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/msn": {
+            "get": {
+                "operationId": "api_car_probe_msn_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMMSNRecord"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/probe/trips": {
+            "get": {
+                "operationId": "api_car_probe_trips_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "required": [
+                                "count",
+                                "results"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                },
+                                "next": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "previous": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "x-nullable": true
+                                },
+                                "results": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/CRMTrip"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/timers/": {
+            "get": {
+                "operationId": "api_car_timers_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CommandTimerSetting"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "post": {
+                "operationId": "api_car_timers_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/car/{vin}/timers/{id}": {
+            "get": {
+                "operationId": "api_car_timers_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "put": {
+                "operationId": "api_car_timers_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "patch": {
+                "operationId": "api_car_timers_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandTimerSetting"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "delete": {
+                "operationId": "api_car_timers_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/command/{vin}/": {
+            "post": {
+                "operationId": "api_command_create",
+                "description": "Send a command to your vehicle",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "required": [
+                                "vin",
+                                "command_type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "command_type": {
+                                    "title": "Command type",
+                                    "type": "number",
+                                    "enum": [
+                                        [
+                                            0,
+                                            "No command"
+                                        ],
+                                        [
+                                            1,
+                                            "Refresh data"
+                                        ],
+                                        [
+                                            2,
+                                            "Charge start"
+                                        ],
+                                        [
+                                            6,
+                                            "Charge start 80%"
+                                        ],
+                                        [
+                                            3,
+                                            "A/C on"
+                                        ],
+                                        [
+                                            4,
+                                            "A/C off"
+                                        ],
+                                        [
+                                            5,
+                                            "Read configuration"
+                                        ],
+                                        [
+                                            7,
+                                            "Door unlock"
+                                        ],
+                                        [
+                                            8,
+                                            "Door lock"
+                                        ],
+                                        [
+                                            9,
+                                            "Horn"
+                                        ],
+                                        [
+                                            10,
+                                            "Lights"
+                                        ],
+                                        [
+                                            11,
+                                            "Horn & Lights"
+                                        ],
+                                        [
+                                            12,
+                                            "Stop Horn & light"
+                                        ],
+                                        [
+                                            13,
+                                            "Remote Start"
+                                        ],
+                                        [
+                                            14,
+                                            "Remote Stop"
+                                        ],
+                                        [
+                                            15,
+                                            "Configuration Request"
+                                        ],
+                                        [
+                                            16,
+                                            "End Battery Lease Contract"
+                                        ]
+                                    ]
+                                },
+                                "command_payload": {
+                                    "type": "object"
+                                },
+                                "command_pin": {
+                                    "title": "PIN code for command types [7, 8, 9, 10, 11, 12, 13, 14, 16]",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Command PIN not set up or invalid"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Car not found"
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandError"
+                        }
+                    }
+                },
+                "tags": [
+                    "cars"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/maplink/resolve": {
+            "post": {
+                "operationId": "api_maplink_resolve_create",
+                "description": "Resolve maps link from Google or Apple into location",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MapLinkResolverInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/MapLinkResolverResponse"
+                        }
+                    }
+                },
+                "tags": [
+                    "maplink"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/probe/location/{vin}/": {
+            "get": {
+                "operationId": "api_probe_location_read",
+                "description": "Retrieve probe location history",
+                "parameters": [
+                    {
+                        "name": "vin",
+                        "in": "path",
+                        "description": "Vehicle VIN",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "start",
+                        "in": "query",
+                        "description": "Start date",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "description": "End date",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CRMDistanceRecord"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Car not found"
+                    }
+                },
+                "tags": [
+                    "api"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "vin",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/api/token/obtain/": {
+            "post": {
+                "operationId": "api_token_obtain_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/JWTTokenObtainPair"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/JWTTokenLogin"
+                        }
+                    },
+                    "401": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/APIError"
+                        }
+                    }
+                },
+                "tags": [
+                    "token"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/token/refresh/": {
+            "post": {
+                "operationId": "api_token_refresh_create",
+                "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TokenRefresh"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/TokenRefresh"
+                        }
+                    }
+                },
+                "tags": [
+                    "token"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/token/signout/": {
+            "post": {
+                "operationId": "api_token_signout_create",
+                "description": "Sign out and invalidate tokens",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TokenBlacklist"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully signed out and token revoked"
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandError"
+                        }
+                    }
+                },
+                "tags": [
+                    "token"
+                ]
+            },
+            "parameters": []
+        },
+        "/api/token/update/": {
+            "post": {
+                "operationId": "api_token_update_create",
+                "description": "Update token metadata",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TokenMetadataUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/TokenMetadata"
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    },
+                    "400": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CommandError"
+                        }
+                    }
+                },
+                "tags": [
+                    "token"
+                ]
+            },
+            "parameters": []
+        }
+    },
+    "definitions": {
+        "AccountDetail": {
+            "required": [
+                "username"
+            ],
+            "type": "object",
+            "properties": {
+                "is_2fa_enabled": {
+                    "title": "Is 2fa enabled",
+                    "type": "boolean",
+                    "readOnly": true
+                },
+                "is_command_pin_set": {
+                    "title": "Is command pin set",
+                    "type": "boolean",
+                    "readOnly": true
+                },
+                "timezone": {
+                    "title": "Timezone",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "email_notifications": {
+                    "title": "Email notifications",
+                    "type": "boolean"
+                },
+                "username": {
+                    "title": "Utilizador",
+                    "description": "Required. 16 characters or fewer. Letters, digits and /./-/_ only.",
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9\\-_\\.]+$",
+                    "maxLength": 16,
+                    "minLength": 1
+                },
+                "email": {
+                    "title": "Endereço de email",
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                },
+                "units_imperial": {
+                    "title": "Units imperial",
+                    "type": "boolean"
+                },
+                "last_login": {
+                    "title": "Última entrada",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                }
+            }
+        },
+        "PinChange": {
+            "required": [
+                "new_pin",
+                "new_pin_confirm"
+            ],
+            "type": "object",
+            "properties": {
+                "otp_code": {
+                    "title": "Otp code",
+                    "type": "string",
+                    "pattern": "^[0-9]{6}$",
+                    "maxLength": 6
+                },
+                "old_pin": {
+                    "title": "Old pin",
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "maxLength": 4,
+                    "minLength": 1
+                },
+                "new_pin": {
+                    "title": "New pin",
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "maxLength": 4,
+                    "minLength": 1
+                },
+                "new_pin_confirm": {
+                    "title": "New pin confirm",
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "maxLength": 4,
+                    "minLength": 1
+                }
+            }
+        },
+        "TCUConfiguration": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "dial_code": {
+                    "title": "Dial code",
+                    "type": "string",
+                    "maxLength": 10,
+                    "x-nullable": true
+                },
+                "apn": {
+                    "title": "Apn",
+                    "type": "string",
+                    "maxLength": 48,
+                    "x-nullable": true
+                },
+                "apn_user": {
+                    "title": "Apn user",
+                    "type": "string",
+                    "maxLength": 32,
+                    "x-nullable": true
+                },
+                "apn_password": {
+                    "title": "Apn password",
+                    "type": "string",
+                    "maxLength": 32,
+                    "x-nullable": true
+                },
+                "dns1": {
+                    "title": "Dns1",
+                    "type": "string",
+                    "maxLength": 32,
+                    "x-nullable": true
+                },
+                "dns2": {
+                    "title": "Dns2",
+                    "type": "string",
+                    "maxLength": 32,
+                    "x-nullable": true
+                },
+                "server_url": {
+                    "title": "Server url",
+                    "type": "string",
+                    "maxLength": 128,
+                    "x-nullable": true
+                },
+                "proxy_url": {
+                    "title": "Proxy url",
+                    "type": "string",
+                    "maxLength": 128,
+                    "x-nullable": true
+                },
+                "connection_type": {
+                    "title": "Connection type",
+                    "type": "string",
+                    "maxLength": 3,
+                    "x-nullable": true
+                },
+                "ficosa_config": {
+                    "title": "Ficosa config",
+                    "type": "object"
+                }
+            }
+        },
+        "LocationInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "lat": {
+                    "title": "Lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "lon": {
+                    "title": "Lon",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "home": {
+                    "title": "Home",
+                    "type": "boolean"
+                }
+            }
+        },
+        "EVInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "range_acon": {
+                    "title": "Range acon",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                },
+                "range_acoff": {
+                    "title": "Range acoff",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                },
+                "plugged_in": {
+                    "title": "Plugged in",
+                    "type": "boolean"
+                },
+                "power_available": {
+                    "title": "Power available",
+                    "type": "boolean"
+                },
+                "charging": {
+                    "title": "Charging",
+                    "type": "boolean"
+                },
+                "charge_finish": {
+                    "title": "Charge finish",
+                    "type": "boolean"
+                },
+                "charging_interrupted": {
+                    "title": "Charging interrupted",
+                    "type": "boolean"
+                },
+                "quick_charging": {
+                    "title": "Quick charging",
+                    "type": "boolean"
+                },
+                "ac_status": {
+                    "title": "Ac status",
+                    "type": "boolean"
+                },
+                "charge_bars": {
+                    "title": "Charge bars",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "car_running": {
+                    "title": "Car running",
+                    "type": "boolean"
+                },
+                "car_gear": {
+                    "title": "Car gear",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "eco_mode": {
+                    "title": "Eco mode",
+                    "type": "boolean"
+                },
+                "soh": {
+                    "title": "Soh",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "soc": {
+                    "title": "Soc",
+                    "type": "number"
+                },
+                "soc_display": {
+                    "title": "Soc display",
+                    "type": "number"
+                },
+                "wh_content": {
+                    "title": "Wh content",
+                    "type": "number"
+                },
+                "cap_bars": {
+                    "title": "Cap bars",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "gids": {
+                    "title": "Gids",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "counter": {
+                    "title": "Counter",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "max_gids": {
+                    "title": "Max gids",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "full_chg_time": {
+                    "title": "Full chg time",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "limit_chg_time": {
+                    "title": "Limit chg time",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "obc_6kw": {
+                    "title": "Obc 6kw",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "param21": {
+                    "title": "Param21",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "cabin_temp": {
+                    "title": "Cabin temp",
+                    "type": "number"
+                },
+                "force_soc_display": {
+                    "title": "Force soc display",
+                    "type": "boolean"
+                },
+                "lease_contract": {
+                    "title": "Lease contract",
+                    "type": "boolean"
+                },
+                "obc_6kw_avail": {
+                    "title": "Obc 6kw avail",
+                    "type": "boolean"
+                },
+                "batt_heater_avail": {
+                    "title": "Batt heater avail",
+                    "type": "boolean"
+                },
+                "batt_heater_status": {
+                    "title": "Batt heater status",
+                    "type": "boolean"
+                },
+                "ac_last_started": {
+                    "title": "Ac last started",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                }
+            }
+        },
+        "VehicleHealthInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "tpms_fr_float": {
+                    "title": "Tpms fr float",
+                    "type": "number",
+                    "readOnly": true
+                },
+                "tpms_fl_float": {
+                    "title": "Tpms fl float",
+                    "type": "number",
+                    "readOnly": true
+                },
+                "tpms_rr_float": {
+                    "title": "Tpms rr float",
+                    "type": "number",
+                    "readOnly": true
+                },
+                "tpms_rl_float": {
+                    "title": "Tpms rl float",
+                    "type": "number",
+                    "readOnly": true
+                },
+                "dtc_timestamp": {
+                    "title": "Dtc timestamp",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "dtc_short": {
+                    "title": "Dtc short",
+                    "type": "object",
+                    "x-nullable": true
+                },
+                "dtc_long": {
+                    "title": "Dtc long",
+                    "type": "object",
+                    "x-nullable": true
+                },
+                "tpms_light": {
+                    "title": "Tpms light",
+                    "type": "boolean"
+                },
+                "tpms_fr": {
+                    "title": "Tpms fr",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "tpms_fl": {
+                    "title": "Tpms fl",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "tpms_rr": {
+                    "title": "Tpms rr",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "tpms_rl": {
+                    "title": "Tpms rl",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "maintenance_alert": {
+                    "title": "Maintenance alert",
+                    "type": "boolean"
+                },
+                "mileage": {
+                    "title": "Mileage",
+                    "type": "number"
+                }
+            },
+            "x-nullable": true
+        },
+        "SendToCarLocation": {
+            "required": [
+                "lat",
+                "lon",
+                "name"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "lat": {
+                    "title": "Lat",
+                    "type": "string"
+                },
+                "lon": {
+                    "title": "Lon",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                }
+            }
+        },
+        "RoutePlan": {
+            "required": [
+                "name",
+                "start_name",
+                "start_lat",
+                "start_lon",
+                "finish_name",
+                "finish_lat",
+                "finish_lon"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 31,
+                    "minLength": 1
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "start_name": {
+                    "title": "Start name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "start_lat": {
+                    "title": "Start lat",
+                    "type": "string"
+                },
+                "start_lon": {
+                    "title": "Start lon",
+                    "type": "string"
+                },
+                "finish_name": {
+                    "title": "Finish name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "finish_lat": {
+                    "title": "Finish lat",
+                    "type": "string"
+                },
+                "finish_lon": {
+                    "title": "Finish lon",
+                    "type": "string"
+                },
+                "point1_name": {
+                    "title": "Point1 name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "x-nullable": true
+                },
+                "point1_lat": {
+                    "title": "Point1 lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point1_lon": {
+                    "title": "Point1 lon",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point2_name": {
+                    "title": "Point2 name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "x-nullable": true
+                },
+                "point2_lat": {
+                    "title": "Point2 lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point2_lon": {
+                    "title": "Point2 lon",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point3_name": {
+                    "title": "Point3 name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "x-nullable": true
+                },
+                "point3_lat": {
+                    "title": "Point3 lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point3_lon": {
+                    "title": "Point3 lon",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point4_name": {
+                    "title": "Point4 name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "x-nullable": true
+                },
+                "point4_lat": {
+                    "title": "Point4 lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point4_lon": {
+                    "title": "Point4 lon",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point5_name": {
+                    "title": "Point5 name",
+                    "type": "string",
+                    "maxLength": 30,
+                    "x-nullable": true
+                },
+                "point5_lat": {
+                    "title": "Point5 lat",
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "point5_lon": {
+                    "title": "Point5 lon",
+                    "type": "string",
+                    "x-nullable": true
+                }
+            }
+        },
+        "CommandTimerSetting": {
+            "required": [
+                "name",
+                "time"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "command_type_display": {
+                    "title": "Command type display",
+                    "type": "string"
+                },
+                "last_command_result_display": {
+                    "title": "Last command result display",
+                    "type": "string"
+                },
+                "timer_type_display": {
+                    "title": "Timer type display",
+                    "type": "string"
+                },
+                "last_command_execution": {
+                    "title": "Last command execution",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "enabled": {
+                    "title": "Enabled",
+                    "type": "boolean"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "timer_type": {
+                    "title": "Timer type",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                },
+                "command_type": {
+                    "title": "Command type",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        6,
+                        3,
+                        4,
+                        5,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16
+                    ]
+                },
+                "last_command_result": {
+                    "title": "Last command result",
+                    "type": "integer",
+                    "enum": [
+                        -1,
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "weekday_mon": {
+                    "title": "Weekday mon",
+                    "type": "boolean"
+                },
+                "weekday_tue": {
+                    "title": "Weekday tue",
+                    "type": "boolean"
+                },
+                "weekday_wed": {
+                    "title": "Weekday wed",
+                    "type": "boolean"
+                },
+                "weekday_thu": {
+                    "title": "Weekday thu",
+                    "type": "boolean"
+                },
+                "weekday_fri": {
+                    "title": "Weekday fri",
+                    "type": "boolean"
+                },
+                "weekday_sat": {
+                    "title": "Weekday sat",
+                    "type": "boolean"
+                },
+                "weekday_sun": {
+                    "title": "Weekday sun",
+                    "type": "boolean"
+                },
+                "time": {
+                    "title": "Time",
+                    "type": "string"
+                },
+                "date": {
+                    "title": "Date",
+                    "type": "string",
+                    "format": "date",
+                    "x-nullable": true
+                }
+            }
+        },
+        "Car": {
+            "required": [
+                "tcu_configuration",
+                "location",
+                "ev_info",
+                "send_to_car_location_all",
+                "route_plans",
+                "command_type_display",
+                "command_result_display",
+                "timer_commands",
+                "vin",
+                "sms_config",
+                "owner"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "tcu_configuration": {
+                    "$ref": "#/definitions/TCUConfiguration"
+                },
+                "location": {
+                    "$ref": "#/definitions/LocationInfo"
+                },
+                "ev_info": {
+                    "$ref": "#/definitions/EVInfo"
+                },
+                "veh_health": {
+                    "$ref": "#/definitions/VehicleHealthInfo"
+                },
+                "send_to_car_location_all": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SendToCarLocation"
+                    }
+                },
+                "send_to_car_location": {
+                    "$ref": "#/definitions/SendToCarLocation"
+                },
+                "route_plans": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RoutePlan"
+                    }
+                },
+                "command_type_display": {
+                    "title": "Command type display",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "command_result_display": {
+                    "title": "Command result display",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "timer_commands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CommandTimerSetting"
+                    }
+                },
+                "command_request_time": {
+                    "title": "Command request time",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "last_connection": {
+                    "title": "Last connection",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "supported_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "readOnly": true
+                },
+                "sensitive_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "readOnly": true
+                },
+                "command_pin_enforced": {
+                    "title": "Command pin enforced",
+                    "type": "boolean",
+                    "readOnly": true
+                },
+                "vin": {
+                    "title": "Vin",
+                    "type": "string",
+                    "maxLength": 18,
+                    "minLength": 1
+                },
+                "nickname": {
+                    "title": "Nickname",
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "sms_config": {
+                    "title": "Sms config",
+                    "type": "object"
+                },
+                "color": {
+                    "title": "Color",
+                    "type": "string",
+                    "enum": [
+                        "l_coulisred",
+                        "l_deepblue",
+                        "l_forgedbronze",
+                        "l_gunmetallic",
+                        "l_pearlwhite",
+                        "l2_pearlwhite",
+                        "l2_gunmetallic",
+                        "l2_jadefrostmetallic",
+                        "l2_superblack",
+                        "l2_vividblue",
+                        "l_planetblue",
+                        "l_superblack",
+                        "env200_white"
+                    ]
+                },
+                "vehicle_code1": {
+                    "title": "Vehicle code1",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "vehicle_code2": {
+                    "title": "Vehicle code2",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "vehicle_code3": {
+                    "title": "Vehicle code3",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "vehicle_code4": {
+                    "title": "Vehicle code4",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "tcu_model": {
+                    "title": "Tcu model",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "tcu_serial": {
+                    "title": "Tcu serial",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "iccid": {
+                    "title": "Iccid",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "tcu_ver": {
+                    "title": "Tcu ver",
+                    "type": "string",
+                    "maxLength": 32,
+                    "x-nullable": true
+                },
+                "tcu_user": {
+                    "title": "Tcu user",
+                    "type": "string",
+                    "maxLength": 16,
+                    "x-nullable": true
+                },
+                "tcu_pass": {
+                    "title": "Tcu pass",
+                    "type": "string",
+                    "maxLength": 16,
+                    "x-nullable": true
+                },
+                "disable_auth": {
+                    "title": "Disable auth",
+                    "type": "boolean"
+                },
+                "periodic_refresh": {
+                    "title": "Periodic refresh",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        30,
+                        45,
+                        60,
+                        180,
+                        720,
+                        1440
+                    ]
+                },
+                "periodic_refresh_running": {
+                    "title": "Periodic refresh running",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        5,
+                        10,
+                        15,
+                        30,
+                        45,
+                        60,
+                        180,
+                        720,
+                        1440
+                    ]
+                },
+                "command_id": {
+                    "title": "Command id",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "command_result": {
+                    "title": "Command result",
+                    "type": "integer",
+                    "enum": [
+                        -1,
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "command_requested": {
+                    "title": "Command requested",
+                    "type": "boolean"
+                },
+                "command_payload": {
+                    "title": "Command payload",
+                    "type": "object",
+                    "x-nullable": true
+                },
+                "command_type": {
+                    "title": "Command type",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        6,
+                        3,
+                        4,
+                        5,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16
+                    ]
+                },
+                "carrier": {
+                    "title": "Carrier",
+                    "type": "string",
+                    "maxLength": 64,
+                    "x-nullable": true
+                },
+                "signal_level": {
+                    "title": "Signal level",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "odometer": {
+                    "title": "Odometer",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "navi_version": {
+                    "title": "Navi version",
+                    "type": "string",
+                    "maxLength": 64,
+                    "x-nullable": true
+                },
+                "map_version": {
+                    "title": "Map version",
+                    "type": "string",
+                    "maxLength": 64,
+                    "x-nullable": true
+                },
+                "tcu_version": {
+                    "title": "Tcu version",
+                    "type": "string",
+                    "maxLength": 64,
+                    "x-nullable": true
+                },
+                "favorite_channels": {
+                    "title": "Favorite channels",
+                    "type": "object"
+                },
+                "custom_channels": {
+                    "title": "Custom channels",
+                    "type": "object"
+                },
+                "hmac_key": {
+                    "title": "Hmac key",
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "tcu_type": {
+                    "title": "Tcu type",
+                    "type": "string",
+                    "enum": [
+                        "continental2012",
+                        "ficosa2016"
+                    ]
+                },
+                "owner": {
+                    "title": "Owner",
+                    "type": "integer"
+                }
+            }
+        },
+        "AlertHistoryFull": {
+            "required": [
+                "type",
+                "type_display"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "type": {
+                    "title": "Type",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16,
+                        17,
+                        18,
+                        19,
+                        20,
+                        21,
+                        22,
+                        92,
+                        93,
+                        94,
+                        95,
+                        96,
+                        97,
+                        98,
+                        99
+                    ]
+                },
+                "type_display": {
+                    "title": "Type display",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "command_id": {
+                    "title": "Command id",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
+                    "x-nullable": true
+                },
+                "additional_data": {
+                    "title": "Additional data",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "car": {
+                    "$ref": "#/definitions/Car"
+                }
+            }
+        },
+        "CarSerializerList": {
+            "required": [
+                "vin",
+                "ev_info",
+                "location"
+            ],
+            "type": "object",
+            "properties": {
+                "vin": {
+                    "title": "Vin",
+                    "type": "string",
+                    "maxLength": 18,
+                    "minLength": 1
+                },
+                "last_connection": {
+                    "title": "Last connection",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "nickname": {
+                    "title": "Nickname",
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "ev_info": {
+                    "$ref": "#/definitions/EVInfo"
+                },
+                "location": {
+                    "$ref": "#/definitions/LocationInfo"
+                },
+                "carrier": {
+                    "title": "Carrier",
+                    "type": "string",
+                    "maxLength": 64,
+                    "x-nullable": true
+                },
+                "signal_level": {
+                    "title": "Signal level",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "tcu_type": {
+                    "title": "Tcu type",
+                    "type": "string",
+                    "enum": [
+                        "continental2012",
+                        "ficosa2016"
+                    ]
+                }
+            }
+        },
+        "EVInfoUpdating": {
+            "type": "object",
+            "properties": {
+                "force_soc_display": {
+                    "title": "Force soc display",
+                    "type": "boolean"
+                }
+            }
+        },
+        "CarUpdating": {
+            "type": "object",
+            "properties": {
+                "send_to_car_location": {
+                    "$ref": "#/definitions/SendToCarLocation"
+                },
+                "send_to_car_location_all": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SendToCarLocation"
+                    },
+                    "x-nullable": true
+                },
+                "ev_info": {
+                    "$ref": "#/definitions/EVInfoUpdating"
+                },
+                "route_plans": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RoutePlan"
+                    }
+                },
+                "favorite_channels": {
+                    "title": "Favorite channels",
+                    "type": "object"
+                },
+                "custom_channels": {
+                    "title": "Custom channels",
+                    "type": "object"
+                }
+            }
+        },
+        "CRMABSHistoryRecord": {
+            "required": [
+                "timestamp",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "longitude": {
+                    "title": "Longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "operation_time": {
+                    "title": "Operation time",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "vehicle_speed_start": {
+                    "title": "Vehicle speed start",
+                    "type": "number"
+                },
+                "vehicle_speed_end": {
+                    "title": "Vehicle speed end",
+                    "type": "number"
+                },
+                "road_type": {
+                    "title": "Road type",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "direction": {
+                    "title": "Direction",
+                    "type": "number"
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CRMChargeRecord": {
+            "required": [
+                "start_time",
+                "end_time",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "charger_position_latitude": {
+                    "title": "Charger position latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "charger_position_longitude": {
+                    "title": "Charger position longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "longitude": {
+                    "title": "Longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "start_time": {
+                    "title": "Start time",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end_time": {
+                    "title": "End time",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "charge_count": {
+                    "title": "Charge count",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "charge_type": {
+                    "title": "Charge type",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CRMChargeHistory": {
+            "required": [
+                "charging_type_label",
+                "start_time",
+                "end_time",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "longitude": {
+                    "title": "Longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "batt_avg_cell_volt_start": {
+                    "title": "Batt avg cell volt start",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "batt_max_cell_volt_start": {
+                    "title": "Batt max cell volt start",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "batt_min_cell_volt_start": {
+                    "title": "Batt min cell volt start",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "power_consumption": {
+                    "title": "charged energy kWh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "charging_type": {
+                    "title": "1=slow,2=fast",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "default": 0
+                },
+                "charging_type_label": {
+                    "title": "Charging Type",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "start_time": {
+                    "title": "Start time",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end_time": {
+                    "title": "End time",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "charge_bars_start": {
+                    "title": "Charge bars start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "charge_bars_end": {
+                    "title": "Charge bars end",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "gids_start": {
+                    "title": "Gids start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "gids_end": {
+                    "title": "Gids end",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_avg_temp_start": {
+                    "title": "Batt avg temp start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_max_temp_start": {
+                    "title": "Batt max temp start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_min_temp_start": {
+                    "title": "Batt min temp start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_avg_temp_end": {
+                    "title": "Batt avg temp end",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_max_temp_end": {
+                    "title": "Batt max temp end",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "batt_min_temp_end": {
+                    "title": "Batt min temp end",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "current_accumulation_start": {
+                    "title": "Current accumulation start",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "charges_while_ignoff": {
+                    "title": "Charges while ignoff",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "DOTFiles": {
+            "required": [
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "capture_ts": {
+                    "title": "Capture ts",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "upload_ts": {
+                    "title": "Upload ts",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "file": {
+                    "title": "File",
+                    "type": "string",
+                    "readOnly": true,
+                    "format": "uri"
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CRMTroubleRecord": {
+            "required": [
+                "data"
+            ],
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "data": {
+                    "title": "Data",
+                    "type": "object"
+                }
+            }
+        },
+        "CRMExcessiveAirconRecord": {
+            "required": [
+                "start"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "consumption": {
+                    "title": "wh",
+                    "type": "integer",
+                    "default": 0
+                },
+                "start": {
+                    "title": "Start",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "CRMExcessiveIdlingRecord": {
+            "required": [
+                "start"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "duration": {
+                    "title": "seconds",
+                    "type": "integer",
+                    "default": 0
+                },
+                "start": {
+                    "title": "Start",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "CRMLatest": {
+            "type": "object",
+            "properties": {
+                "phone_contacts": {
+                    "title": "Phone contacts",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "navi_points_saved": {
+                    "title": "Navi points saved",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "odometer": {
+                    "title": "Odometer",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                }
+            }
+        },
+        "CRMLifetime": {
+            "required": [
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "consumption": {
+                    "title": "Consumption Wh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "regen": {
+                    "title": "Regen Wh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "average_speed": {
+                    "title": "kph",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "aircon_usage": {
+                    "title": "seconds",
+                    "type": "integer",
+                    "default": 0
+                },
+                "headlight_on_time": {
+                    "title": "seconds",
+                    "type": "integer",
+                    "default": 0
+                },
+                "running_time": {
+                    "title": "seconds",
+                    "type": "integer",
+                    "default": 0
+                },
+                "mileage": {
+                    "title": "Mileage",
+                    "type": "number"
+                },
+                "last_updated": {
+                    "title": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-nullable": true
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CRMMonthly": {
+            "required": [
+                "start",
+                "end",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "consumed_total_wh": {
+                    "title": "Consumed total wh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "regen_total_wh": {
+                    "title": "Regen total wh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "average_accel": {
+                    "title": "G-forces",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "start": {
+                    "title": "Start",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end": {
+                    "title": "End",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "distance": {
+                    "title": "Distance",
+                    "type": "number"
+                },
+                "drive_time": {
+                    "title": "Drive time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "average_speed": {
+                    "title": "Average speed",
+                    "type": "number"
+                },
+                "p_range_freq": {
+                    "title": "P range freq",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "r_range_freq": {
+                    "title": "R range freq",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "n_range_freq": {
+                    "title": "N range freq",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "b_range_freq": {
+                    "title": "B range freq",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "trip_count": {
+                    "title": "Trip count",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "braking_speeds": {
+                    "title": "Braking speeds",
+                    "type": "object"
+                },
+                "start_stop_distances": {
+                    "title": "Start stop distances",
+                    "type": "object"
+                },
+                "switch_usage_parked": {
+                    "title": "Switch usage parked",
+                    "type": "object"
+                },
+                "switch_usage_driving": {
+                    "title": "Switch usage driving",
+                    "type": "object"
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CRMMSNRecord": {
+            "required": [
+                "timestamp",
+                "data"
+            ],
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "data": {
+                    "title": "Data",
+                    "type": "object"
+                }
+            }
+        },
+        "CRMBehaviorMap": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "longitude": {
+                    "title": "Longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "CRMTrip": {
+            "required": [
+                "start_ts",
+                "end_ts",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "start_latitude": {
+                    "title": "Start latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "start_longitude": {
+                    "title": "Start longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "end_latitude": {
+                    "title": "End latitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "end_longitude": {
+                    "title": "End longitude",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "eco_tree_count": {
+                    "title": "Eco tree count",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "distance": {
+                    "title": "km",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "average_speed": {
+                    "title": "kph",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "regen": {
+                    "title": "Wh",
+                    "type": "number",
+                    "default": 0.0
+                },
+                "batt_temp_start": {
+                    "title": "bars",
+                    "type": "integer",
+                    "default": 0,
+                    "maximum": 12,
+                    "minimum": 0
+                },
+                "batt_temp_end": {
+                    "title": "bars",
+                    "type": "integer",
+                    "default": 0,
+                    "maximum": 12,
+                    "minimum": 0
+                },
+                "bda_energy_content_start": {
+                    "title": "GIDs",
+                    "type": "integer",
+                    "default": 0
+                },
+                "bda_energy_content_end": {
+                    "title": "GIDs",
+                    "type": "integer",
+                    "default": 0
+                },
+                "tpms_fl": {
+                    "title": "PSI",
+                    "type": "integer",
+                    "default": 0
+                },
+                "tpms_fr": {
+                    "title": "PSI",
+                    "type": "integer",
+                    "default": 0
+                },
+                "tpms_rl": {
+                    "title": "PSI",
+                    "type": "integer",
+                    "default": 0
+                },
+                "tpms_rr": {
+                    "title": "PSI",
+                    "type": "integer",
+                    "default": 0
+                },
+                "sudden_decelerations": {
+                    "title": "Sudden decelerations",
+                    "type": "integer",
+                    "default": 0
+                },
+                "sudden_accelerations": {
+                    "title": "Sudden accelerations",
+                    "type": "integer",
+                    "default": 0
+                },
+                "non_constant_speeds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CRMBehaviorMap"
+                    },
+                    "readOnly": true
+                },
+                "non_eco_decelerations_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CRMBehaviorMap"
+                    },
+                    "readOnly": true
+                },
+                "sudden_accelerations_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CRMBehaviorMap"
+                    },
+                    "readOnly": true
+                },
+                "sudden_starts_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CRMBehaviorMap"
+                    },
+                    "readOnly": true
+                },
+                "start_ts": {
+                    "title": "Start ts",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end_ts": {
+                    "title": "End ts",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "highway_optimal_speed_time": {
+                    "title": "Highway optimal speed time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "aircon_usage": {
+                    "title": "Aircon usage",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "highway_driving_time": {
+                    "title": "Highway driving time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "idling_time": {
+                    "title": "Idling time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "outside_temp_start": {
+                    "title": "Outside temp start",
+                    "type": "number"
+                },
+                "outside_temp_end": {
+                    "title": "Outside temp end",
+                    "type": "number"
+                },
+                "trip_time": {
+                    "title": "Trip time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "aircon_consumption": {
+                    "title": "Aircon consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "auxiliary_consumption": {
+                    "title": "Auxiliary consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "motor_consumption": {
+                    "title": "Motor consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "idle_consumption": {
+                    "title": "Idle consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "sudden_start_consumption": {
+                    "title": "Sudden start consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "sudden_start_time": {
+                    "title": "Sudden start time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "sudden_acceleration_consumption": {
+                    "title": "Sudden acceleration consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "sudden_acceleration_time": {
+                    "title": "Sudden acceleration time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "non_eco_deceleration_consumption": {
+                    "title": "Non eco deceleration consumption",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "non_eco_deceleration_time": {
+                    "title": "Non eco deceleration time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "soh_start": {
+                    "title": "Soh start",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "soh_end": {
+                    "title": "Soh end",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "wh_energy_start": {
+                    "title": "Wh energy start",
+                    "type": "number"
+                },
+                "wh_energy_end": {
+                    "title": "Wh energy end",
+                    "type": "number"
+                },
+                "bda_avg_temp_start": {
+                    "title": "Bda avg temp start",
+                    "type": "number"
+                },
+                "bda_max_temp_start": {
+                    "title": "Bda max temp start",
+                    "type": "number"
+                },
+                "bda_min_temp_start": {
+                    "title": "Bda min temp start",
+                    "type": "number"
+                },
+                "bda_avg_temp_end": {
+                    "title": "Bda avg temp end",
+                    "type": "number"
+                },
+                "bda_max_temp_end": {
+                    "title": "Bda max temp end",
+                    "type": "number"
+                },
+                "bda_min_temp_end": {
+                    "title": "Bda min temp end",
+                    "type": "number"
+                },
+                "bda_avg_cell_volt_start": {
+                    "title": "Bda avg cell volt start",
+                    "type": "number"
+                },
+                "bda_max_cell_volt_start": {
+                    "title": "Bda max cell volt start",
+                    "type": "number"
+                },
+                "bda_min_cell_volt_start": {
+                    "title": "Bda min cell volt start",
+                    "type": "number"
+                },
+                "bda_regen_end": {
+                    "title": "Bda regen end",
+                    "type": "number"
+                },
+                "bda_number_qc_charges": {
+                    "title": "Bda number qc charges",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "bda_number_ac_charges": {
+                    "title": "Bda number ac charges",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "bda_soc_end": {
+                    "title": "Bda soc end",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "bda_resistance_end": {
+                    "title": "Bda resistance end",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "bda2_capacity_bars_end": {
+                    "title": "Bda2 capacity bars end",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "bda2_soc_end": {
+                    "title": "Bda2 soc end",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "headlight_on_time": {
+                    "title": "Headlight on time",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "average_acceleration": {
+                    "title": "Average acceleration",
+                    "type": "number"
+                },
+                "start_odometer": {
+                    "title": "Start odometer",
+                    "type": "integer",
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808
+                },
+                "max_speed": {
+                    "title": "Max speed",
+                    "type": "number"
+                },
+                "used_preheating": {
+                    "title": "Used preheating",
+                    "type": "boolean"
+                },
+                "car": {
+                    "title": "Car",
+                    "type": "integer"
+                }
+            }
+        },
+        "CommandResponse": {
+            "required": [
+                "message",
+                "car"
+            ],
+            "type": "object",
+            "properties": {
+                "message": {
+                    "title": "Message",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "car": {
+                    "$ref": "#/definitions/Car"
+                }
+            }
+        },
+        "CommandError": {
+            "required": [
+                "error"
+            ],
+            "type": "object",
+            "properties": {
+                "error": {
+                    "title": "Error",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "MapLinkResolverInput": {
+            "required": [
+                "url"
+            ],
+            "type": "object",
+            "properties": {
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "maxLength": 1024,
+                    "minLength": 1
+                }
+            }
+        },
+        "MapLinkResolvedLocation": {
+            "required": [
+                "lat",
+                "lon",
+                "name",
+                "address"
+            ],
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "title": "Lat",
+                    "type": "string"
+                },
+                "lon": {
+                    "title": "Lon",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "address": {
+                    "title": "Address",
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "x-nullable": true
+        },
+        "MapLinkResolverResponse": {
+            "required": [
+                "status"
+            ],
+            "type": "object",
+            "properties": {
+                "status": {
+                    "title": "Status",
+                    "type": "boolean"
+                },
+                "cause": {
+                    "title": "Cause",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "location": {
+                    "$ref": "#/definitions/MapLinkResolvedLocation"
+                }
+            }
+        },
+        "CRMDistanceRecord": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "title": "Timestamp",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "consumed_wh": {
+                    "title": "Consumed wh",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "regenerated_wh": {
+                    "title": "Regenerated wh",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                },
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "string"
+                },
+                "longitude": {
+                    "title": "Longitude",
+                    "type": "string"
+                },
+                "road_type": {
+                    "title": "Road type",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": -2147483648
+                }
+            }
+        },
+        "JWTTokenObtainPair": {
+            "required": [
+                "username",
+                "password"
+            ],
+            "type": "object",
+            "properties": {
+                "otp_code": {
+                    "title": "Otp code",
+                    "type": "string",
+                    "pattern": "^[0-9]{6}$",
+                    "maxLength": 6
+                },
+                "device_type": {
+                    "title": "Device type",
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "device_os": {
+                    "title": "Device os",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "app_version": {
+                    "title": "App version",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "push_notification_key": {
+                    "title": "Push notification key",
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "username": {
+                    "title": "Username",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "password": {
+                    "title": "Password",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "JWTTokenLogin": {
+            "required": [
+                "refresh"
+            ],
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "title": "Refresh",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "access": {
+                    "title": "Access",
+                    "type": "string",
+                    "readOnly": true,
+                    "minLength": 1
+                },
+                "user_id": {
+                    "title": "User id",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "username": {
+                    "title": "Username",
+                    "type": "string",
+                    "maxLength": 16
+                }
+            }
+        },
+        "APIError": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "title": "Detail",
+                    "type": "string",
+                    "readOnly": true
+                },
+                "error": {
+                    "title": "Error",
+                    "type": "string",
+                    "readOnly": true
+                }
+            }
+        },
+        "TokenRefresh": {
+            "required": [
+                "refresh"
+            ],
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "title": "Refresh",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "access": {
+                    "title": "Access",
+                    "type": "string",
+                    "readOnly": true,
+                    "minLength": 1
+                }
+            }
+        },
+        "TokenBlacklist": {
+            "required": [
+                "refresh"
+            ],
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "title": "Refresh",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "TokenMetadataUpdate": {
+            "required": [
+                "refresh"
+            ],
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "title": "Refresh",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                },
+                "device_type": {
+                    "title": "Device type",
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "device_os": {
+                    "title": "Device os",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "app_version": {
+                    "title": "App version",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "push_notification_key": {
+                    "title": "Push notification key",
+                    "type": "string",
+                    "maxLength": 500
+                }
+            }
+        },
+        "TokenMetadata": {
+            "type": "object",
+            "properties": {
+                "device_type": {
+                    "title": "Device type",
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "device_os": {
+                    "title": "Device os",
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "app_version": {
+                    "title": "App version",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "push_notification_key": {
+                    "title": "Push notification key",
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "user_agent": {
+                    "title": "User agent",
+                    "type": "string"
+                },
+                "last_used_at": {
+                    "title": "Last used at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                }
+            }
+        }
+    }
+}
