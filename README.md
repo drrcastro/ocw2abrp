@@ -19,8 +19,8 @@ It continuously fetches live vehicle telemetry from your OpenCARWINGS-connected 
 
 ## Features
 
-- **Full Telemetry Mapping**: Feeds ABRP with battery SoC, SoH, remaining energy (`soe`), usable capacity (`capacity`), GPS position (`lat`/`lon`), odometer, TPMS tire pressures, temperatures, and vehicle-estimated range.
-- **Derived Speed & Power**: Automatically calculates average power (`kW`) and speed (`km/h`) across consecutive OpenCARWINGS snapshots while driving or charging.
+- **Full Telemetry Mapping**: Feeds ABRP with battery SoC, SoH, remaining energy (`soe`), degraded usable capacity (`capacity`), GPS position (`lat`/`lon`), odometer, TPMS tire pressures, temperatures, and vehicle-estimated range.
+- **Smart Power & Speed Estimation**: Detects AC charging power (`-1.2 kW`, `-3.6 kW`, `-6.6 kW`) immediately from CARWINGS charge time registers (`limit_chg_time`, `full_chg_time`, `obc_6kw`) and refines average power (`kW`) and speed (`km/h`) across consecutive snapshots while driving or charging.
 - **Zero-Config Vehicle Discovery**: Automatically detects the first VIN on your OpenCARWINGS account if `OCW_VIN` is omitted.
 - **Flexible Authentication**: Supports both OpenCARWINGS **Personal API Keys** (`Token`) and **Username/Password** (`JWT Bearer`) with automatic token refresh.
 - **ABRP Telemetry API v1 & v2**: Supports the standard ABRP v1 endpoint (`/1/tlm/send`) as well as the newer v2 endpoint (`/2/app/tlm`).
@@ -37,8 +37,8 @@ The script reads `/api/car/{vin}/` (and `/api/car/{vin}/probe/trips`) from OpenC
 | `utc` | `ev_info.last_updated` | UTC Unix timestamp in seconds |
 | `soc` | `ev_info.soc_display` / `soc` | Battery State of Charge (`%`, defaults to dashboard SoC as recommended by ABRP) |
 | `soh` | `ev_info.soh` | Battery State of Health (`%`) |
-| `soe` | `ev_info.wh_content` | Remaining energy in the battery (`kWh`) |
-| `capacity` | `ev_info.max_gids * 80 Wh` | Current usable battery capacity (`kWh`) |
+| `soe` | `ev_info.wh_content` / `gids * 80 Wh` | Remaining energy in the battery (`kWh`) |
+| `capacity` | `max_gids * (soh / 100) * 80 Wh` | Degraded usable battery capacity (`kWh`) |
 | `lat`, `lon` | `location.lat`, `location.lon` | Current vehicle GPS coordinates |
 | `is_charging` | `ev_info.charging` | `1` when charging, `0` otherwise |
 | `is_dcfc` | `ev_info.quick_charging` | `1` when DC fast charging (CHAdeMO), `0` on AC |
@@ -48,7 +48,9 @@ The script reads `/api/car/{vin}/` (and `/api/car/{vin}/probe/trips`) from OpenC
 | `tire_pressure_*` | `veh_health.tpms_*_float` | Front/Rear Left/Right tire pressures converted to `kPa` |
 | `cabin_temp` | `ev_info.cabin_temp` | Interior cabin temperature (`°C`) |
 | `ext_temp`, `batt_temp` | `probe/trips` (when recent) | Ambient and battery temperatures (`°C`) |
-| `speed`, `power` | Computed across snapshots | Average speed (`km/h`) and power (`kW`, positive = driving, negative = charging) |
+| `power` | `limit_chg_time` / `full_chg_time` / `obc_6kw` & `ΔWh/Δt` | Charging power (`-1.2` / `-3.6` / `-6.6 kW`) and measured power (`kW`, positive = driving, negative = charging) |
+| `speed` | Computed across snapshots | Average speed (`km/h`) from GPS Haversine / odometer delta |
+| `car_model` | `ABRP_CAR_MODEL` *(optional)* | ABRP vehicle typecode (e.g., `nissan:leaf:12:24:other`) |
 
 ---
 
@@ -82,6 +84,7 @@ Copy-Item .env.example .env
      2. Go to **Car Settings** -> **Live Data** -> **Generic** (*Link Generic*).
      3. Copy the generated **User Token** and paste it into `ABRP_USER_TOKEN`.
    - **`OCW_VIN`** *(Optional)*: Leave empty to automatically select the first vehicle in your OpenCARWINGS account.
+   - **`ABRP_CAR_MODEL`** *(Optional)*: Leave empty to use the vehicle model configured in your ABRP account, or set an explicit ABRP typecode (e.g., `nissan:leaf:12:24:other`).
 
 > [!TIP]
 > **In-Drive Updates in OpenCARWINGS:**
