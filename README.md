@@ -128,6 +128,6 @@ python ocw2abrp.py
 
 ## API References
 
-- **OpenCARWINGS API Documentation**: [https://opencarwings.viaaq.eu/apidocs/](https://opencarwings.viaaq.eu/apidocs/) ([opencarwings_api.json](opencarwings_api.json))
+- **OpenCARWINGS API Documentation**: [https://opencarwings.viaaq.eu/apidocs/](https://opencarwings.viaaq.eu/apidocs/) 
 - **Iternio / ABRP Telemetry API (v1)**: [Postman Documentation](https://documenter.getpostman.com/view/7396339/SWTK5a8w)
-- **Iternio Planning & Telemetry API (v2)**: [https://api.iternio.com/swagger-ui/#/](https://api.iternio.com/swagger-ui/#/) ([abrp_api.yaml](abrp_api.yaml))
+- **Iternio Planning & Telemetry API (v2)**: [https://api.iternio.com/swagger-ui/#/](https://api.iternio.com/swagger-ui/#/) 
