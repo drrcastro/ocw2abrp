@@ -58,7 +58,7 @@ The script reads `/api/car/{vin}/` (and `/api/car/{vin}/probe/trips`) from OpenC
 2. Clone this repository and install the dependencies:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ocw2abrp.git
+git clone https://github.com/drrcastro/ocw2abrp.git
 cd ocw2abrp
 pip install -r requirements.txt
 ```
