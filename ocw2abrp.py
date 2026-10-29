@@ -238,7 +238,8 @@ class ABRPClient:
             "token": self.user_token,
             "tlm": json.dumps(tlm, separators=(",", ":")),
         }
-        resp = self.session.post(ABRP_V1_TLM_URL, params=params, timeout=self.timeout)
+        headers = {"Authorization": f"APIKEY {self.api_key}"}
+        resp = self.session.post(ABRP_V1_TLM_URL, headers=headers, params=params, timeout=self.timeout)
         resp.raise_for_status()
         return resp.json()
 
@@ -299,16 +300,40 @@ class ABRPClient:
         return resp.json() if resp.content else {"status": "ok"}
 
 
+def estimate_carwings_charging_power_kw(ev_info: Dict[str, Any]) -> Optional[float]:
+    """
+    Estimates AC/DC charging power (negative kW for ABRP) from OpenCARWINGS TCU charge time registers.
+    In CARWINGS protocol, 2047 (0x7FF) and 4095 (0xFFF) mean 'unavailable / not active'.
+    """
+    if not ev_info.get("charging", False):
+        return None
+
+    power_kw: Optional[float] = None
+    limit_chg_time = ev_info.get("limit_chg_time")
+    full_chg_time = ev_info.get("full_chg_time")
+    obc_6kw = ev_info.get("obc_6kw")
+
+    if limit_chg_time is not None and int(limit_chg_time) not in (0, 2047, 4095):
+        power_kw = -1.2
+    if full_chg_time is not None and int(full_chg_time) not in (0, 2047, 4095):
+        power_kw = -3.6
+    if obc_6kw is not None and int(obc_6kw) not in (0, 2047, 4095):
+        power_kw = -6.6
+
+    return power_kw
+
+
 def build_abrp_telemetry(
     car_data: Dict[str, Any],
     prev_state: Optional[SnapshotState],
     latest_trip: Optional[Dict[str, Any]] = None,
     use_dash_soc: bool = True,
     gid_wh: float = 80.0,
+    car_model: Optional[str] = None,
 ) -> tuple[Dict[str, Any], SnapshotState]:
     """
     Maps the OpenCARWINGS `Car` object to the `tlm` dictionary expected by ABRP.
-    Also estimates average power (kW) and speed (km/h) across consecutive snapshots.
+    Combines CARWINGS register heuristics with differential power (kW) and speed (km/h) across snapshots.
     """
     ev_info: Dict[str, Any] = car_data.get("ev_info") or {}
     loc_info: Dict[str, Any] = car_data.get("location") or {}
@@ -331,6 +356,8 @@ def build_abrp_telemetry(
     utc_to_send = int(reading_epoch if (now_epoch - reading_epoch) <= 600 else now_epoch)
 
     tlm: Dict[str, Any] = {"utc": utc_to_send}
+    if car_model:
+        tlm["car_model"] = car_model
 
     # 1. State of Charge (SoC %)
     soc_display = ev_info.get("soc_display")
@@ -349,11 +376,13 @@ def build_abrp_telemetry(
         tlm["soc"] = soc
 
     # 2. State of Health (SoH %)
-    soh = ev_info.get("soh")
-    if soh is not None and float(soh) > 0:
-        tlm["soh"] = round(float(soh), 2)
+    soh_raw = ev_info.get("soh")
+    soh: Optional[float] = None
+    if soh_raw is not None and float(soh_raw) > 0:
+        soh = round(float(soh_raw), 2)
+        tlm["soh"] = soh
 
-    # 3. Remaining Energy (SoE in kWh) and Usable Battery Capacity (capacity in kWh)
+    # 3. Remaining Energy (SoE in kWh) and Degraded Usable Battery Capacity (capacity in kWh)
     wh_content = ev_info.get("wh_content")
     max_gids = ev_info.get("max_gids")
     gids = ev_info.get("gids")
@@ -368,7 +397,10 @@ def build_abrp_telemetry(
         tlm["soe"] = round(curr_wh / 1000.0, 3)
 
     if max_gids is not None and int(max_gids) > 0:
-        tlm["capacity"] = round((float(max_gids) * gid_wh) / 1000.0, 3)
+        # In OpenCARWINGS, max_gids is the nominal factory GIDs count of the pack;
+        # multiplying by (soh / 100) yields the current degraded usable capacity in kWh.
+        soh_factor = (soh / 100.0) if (soh is not None and 0 < soh <= 100.0) else 1.0
+        tlm["capacity"] = round(((float(max_gids) * soh_factor) * gid_wh) / 1000.0, 3)
     elif curr_wh is not None and soc is not None and soc > 5.0:
         tlm["capacity"] = round((curr_wh / 1000.0) / (soc / 100.0), 3)
 
@@ -462,6 +494,8 @@ def build_abrp_telemetry(
         power_kw = 0.0
     elif is_charging:
         speed_kmh = 0.0
+        # Immediate charging power estimate from CARWINGS charge time registers (-1.2, -3.6, or -6.6 kW)
+        power_kw = estimate_carwings_charging_power_kw(ev_info)
 
     if prev_state is not None and reading_epoch > prev_state.timestamp_epoch:
         dt_hours = (reading_epoch - prev_state.timestamp_epoch) / 3600.0
@@ -577,6 +611,7 @@ def main() -> int:
     abrp_token = os.getenv("ABRP_USER_TOKEN", "")
     abrp_api_key = os.getenv("ABRP_API_KEY", DEFAULT_ABRP_API_KEY)
     abrp_version = "v2" if args.v2 else os.getenv("ABRP_API_VERSION", "v1")
+    abrp_car_model = (os.getenv("ABRP_CAR_MODEL") or "").strip() or None
 
     try:
         ocw = OpenCarWingsClient(
@@ -631,6 +666,7 @@ def main() -> int:
                     latest_trip=latest_trip,
                     use_dash_soc=use_dash_soc,
                     gid_wh=gid_wh,
+                    car_model=abrp_car_model,
                 )
 
                 now = time.time()
